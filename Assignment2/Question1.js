@@ -20,7 +20,7 @@ function getActors(data) {
     let all_actors = []
     data.map(movie => {
         for (let i = 0; i < movie.cast.length; i++) {
-            pattern = /^[a-zA-Z]{2,15}\s[a-zA-Z]{2,15}(?:\s[a-zA-Z]{2,15})?$/
+            const pattern = /^[a-zA-Z]{2,15}\s[a-zA-Z]{2,15}(?:\s[a-zA-Z]{2,15})?$/
             if (movie.cast[i].match(pattern) !== null) {
                 all_actors.push(movie.cast[i])
             }
@@ -60,7 +60,7 @@ function getGenres(data) {
     let all_genres = []
     data.map(movie => {
         for (let i = 0; i < movie.genres.length; i++) {
-            pattern = /^[A-Za-z]+$/
+            const pattern = /^[A-Za-z]+$/
             if (movie.genres[i].match(pattern) !== null) {
                 all_genres.push(movie.genres[i])
             }

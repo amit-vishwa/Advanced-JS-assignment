@@ -1,5 +1,5 @@
 class QueenAttack {
-    constructor(x1, y1, x2, y2) {
+    constructor() {
         this.queen1 = {
             x: 0,
             y: 0
@@ -40,11 +40,9 @@ class QueenAttack {
         let y = this.queen1.y-1
 
         //check left top
-        console.log("left top")
         while (x >= 0 && y >= 0) {
 
             if (x === this.queen2.x && y === this.queen2.y) {
-                console.log("here")
                 return true
             }
 
@@ -55,10 +53,7 @@ class QueenAttack {
         x = this.queen1.x-1
         y = this.queen1.y+1
         //check left bottom
-        console.log("left bottom")
         while (x >= 0 && y <= this.matrix.y) {
-
-            console.log(x, y)
             if (x === this.queen2.x && y === this.queen2.y) {
                 return true
             }
@@ -70,10 +65,7 @@ class QueenAttack {
         x = this.queen1.x+1
         y = this.queen1.y-1
         //check right top
-        console.log("right top")
         while (x <= this.matrix.x && y >= 0) {
-
-            console.log(x, y)
             if (x === this.queen2.x && y === this.queen2.y) {
                 return true
             }
@@ -87,7 +79,6 @@ class QueenAttack {
         //check right bottom
         console.log("right bottom")
         while (x <= this.matrix.x && y <= this.matrix.y) {
-            console.log(x, y)
             if (x === this.queen2.x && y === this.queen2.y) {
                 return true
             }
@@ -119,5 +110,5 @@ function handleSubmitQ2() {
     console.log(qa.getQueens())
     console.log(qa.canAttack())
     let res = document.getElementById('attack-result')
-    res.innerHTML = qa.canAttack()
+    res.textContent = qa.canAttack()
 }
