@@ -1,7 +1,3 @@
-$(document).ready(() => {
-    $('#repo-list').hide()
-})
-
 const BASE_URL = 'https://api.github.com/search/repositories?q='
 
 async function handleSubmitQ2() {
@@ -15,34 +11,48 @@ function getFormData() {
     return formdata
 }
 
-function searchRepo() {
-    formdata = getFormData()
-    if(formdata.owner!=="" || formdata.repo!==""){
-        let query_url = BASE_URL + "repo:" + formdata["owner"] + "/" + formdata["repo"]
-        $.get(query_url, (data, status) => {
-            populateRepoList(data.items)
-        })
-    }else{
-        alert("enter form data")
+async function searchRepo() {
+    const formdata = getFormData()
+    if(formdata.owner === "" || formdata.repo === ""){
+        alert("Enter both an owner and repository name")
+        return
     }
+
+    const query = encodeURIComponent(`repo:${formdata.owner}/${formdata.repo}`)
+    const response = await fetch(BASE_URL + query)
+    if (!response.ok) {
+        throw new Error(`GitHub request failed with status ${response.status}`)
+    }
+    const data = await response.json()
+    populateRepoList(data.items)
 }
 
 function populateRepoList(repolist) {
-    if (repolist.length === 0) {
-        $('#repo-list').hide()
-    } else {
-        $('#repo-list').empty()
-        $('#repo-list').show()
-        for (let i = 0; i < repolist.length; i++) {
-            $('#repo-list').append(`
-            <li class='list-group-item'>
-                <div class='d-flex'>
-                    <img style="width:50px" src=${repolist[i].owner.avatar_url}></img>
-                    <p class='m-2'>${repolist[i].owner.login}</p>
-                    <a  class='m-2' href=${repolist[i].html_url} target="_blank">${repolist[i].name}</a>
-                <div>
-            </li>
-            `)
-        }
+    const list = document.getElementById('repo-list')
+    list.replaceChildren()
+    list.hidden = repolist.length === 0
+
+    for (const repo of repolist) {
+        const item = document.createElement('li')
+        item.className = 'list-group-item d-flex align-items-center'
+
+        const avatar = document.createElement('img')
+        avatar.width = 50
+        avatar.src = repo.owner.avatar_url
+        avatar.alt = `${repo.owner.login} avatar`
+
+        const owner = document.createElement('span')
+        owner.className = 'm-2'
+        owner.textContent = repo.owner.login
+
+        const link = document.createElement('a')
+        link.className = 'm-2'
+        link.href = repo.html_url
+        link.target = '_blank'
+        link.rel = 'noopener noreferrer'
+        link.textContent = repo.name
+
+        item.append(avatar, owner, link)
+        list.append(item)
     }
 }

@@ -1,6 +1,4 @@
 let battles_data = []
-let agg_object={}
-let div = document.getElementById('#agg_data')
 
 function fetchJson() {
     fetch("battles.json")
@@ -9,6 +7,7 @@ function fetchJson() {
             battles_data = json
         })
         .then(()=>{
+            const agg_object = {}
             agg_object["attacker_outcome"]=getAttackerOutcome()
             agg_object["battle_type"]=Array.from(getUniqueBattleTypes())
             agg_object["defender_size"]=getDefenderSize()
@@ -96,32 +95,13 @@ function getUniqueBattleTypes(){
 }
 
 function getDefenderSize(){
-    function getmax(a,b){
-        if(typeof a.defender_size === 'null'){return b}
-        if(typeof b.defender_size === 'null'){return a}
-        if(a.defender_size>b.defender_size){return a}
-        else{return b}
-    }
-    function getmin(battles){
-        let min = 1000000000
-        battles.map(battle=>{
-            if(battle.defender_size!=null){
-                if(battle.defender_size<min){
-                    min = battle.defender_size
-                }
-            }
-            
-        })
-        return min
-    }
-    
-    let mini = getmin(battles_data)
-    let max = battles_data.reduce(getmax).defender_size
-    let sum = 0
-    battles_data.map((elem)=>{
-        sum+=elem.defender_size
-    })
-    let avg = sum/battles_data.length
+    const sizes = battles_data
+        .map(battle => battle.defender_size)
+        .filter(size => size !== null)
+
+    const mini = Math.min(...sizes)
+    const max = Math.max(...sizes)
+    const avg = sizes.reduce((sum, size) => sum + size, 0) / sizes.length
     
     return {
         min:mini,
@@ -132,5 +112,5 @@ function getDefenderSize(){
 
 function showAggData(agg_object){
     console.log(agg_object)
-    $('#agg_data').append(`<pre>${agg_object}</pre>`)
+    document.getElementById('agg-data').textContent = JSON.stringify(agg_object, null, 2)
 }

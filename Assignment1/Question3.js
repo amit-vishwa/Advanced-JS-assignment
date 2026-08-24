@@ -1,28 +1,25 @@
 
-$(document).ready(() => {
-    $('#nobel-list').hide()
-})
-
 async function handleSubmitQ3() {
     await fetchData()
 }
 
 function populateNobelList(data) {
     if (data.length === 0) {
-        $('#nobel-list').hide()
+        document.getElementById('nobel-list').hidden = true
     } else {
-        $('#nobel-list').empty()
-        $('#nobel-list').show()
-        for (let i = 0; i < data.length; i++) {
-            $('#nobel-list').append(`
-            <li class='list-group-item'>
-                <div class='d-flex'>
-                    <p class='m-2'>${data[i].year}</p>
-                    <p class='m-2'>${data[i].category}</p>
-                    <p class='m-2'>${data[i].name}</p>
-                <div>
-            </li>
-            `)
+        const list = document.getElementById('nobel-list')
+        list.replaceChildren()
+        list.hidden = false
+        for (const laureate of data) {
+            const item = document.createElement('li')
+            item.className = 'list-group-item d-flex'
+            for (const value of [laureate.year, laureate.category, laureate.name]) {
+                const field = document.createElement('span')
+                field.className = 'm-2'
+                field.textContent = value
+                item.append(field)
+            }
+            list.append(item)
         }
     }
 }
@@ -47,7 +44,7 @@ function findRequired(data){
 }
 
 function fetchData(){
-    fetch('http://api.nobelprize.org/v1/prize.json')
+    fetch('https://api.nobelprize.org/v1/prize.json')
     .then(response => response.json())
     .then(data => {
         findRequired(data.prizes)

@@ -1,16 +1,17 @@
-$(document).ready(() => {
-    $('#flight-list').hide()
-})
-
 async function handleSubmitQ4(){
     await getFlightData()
 }
 
 function getFlightData(){
-    axios.get('https://think.cs.vt.edu/corgis/datasets/json/airlines/airlines.json')
-    .then(res=>{
-        // console.log(res)
-        populateFlightList(res.data)
+    fetch('https://think.cs.vt.edu/corgis/datasets/json/airlines/airlines.json')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Airline request failed with status ${response.status}`)
+        }
+        return response.json()
+    })
+    .then(data=>{
+        populateFlightList(data)
     })
     .catch(err=>{
         alert(err)
@@ -18,29 +19,31 @@ function getFlightData(){
 }
 
 function checkSum(data){
-    console.log(data)
-    if(data["Cancelled"]+data["Delayed"]+data["Diverted"]+data["On Time"]===data["Total"]){
-        return true
-    }
-    return false
+    return data["Cancelled"] + data["Delayed"] + data["Diverted"] + data["On Time"] === data["Total"]
 }
 
 function populateFlightList(data) {
     if (data.length === 0) {
-        $('#flight-list').hide()
+        document.getElementById('flight-list').hidden = true
     } else {
-        $('#flight-list').empty()
-        $('#flight-list').show()
-        for (let i = 0; i < data.length; i++) {
-            $('#flight-list').append(`
-            <li class='list-group-item'>
-                <div class='d-flex'>
-                    <p class='m-2'>${data[i].Airport.Code}</p>
-                    <p class='m-2'>${data[i].Airport.Name}</p>
-                    <p class='m-2'>sum: ${checkSum(data[i].Statistics.Flights)}</p>
-                <div>
-            </li>
-            `)
+        const list = document.getElementById('flight-list')
+        list.replaceChildren()
+        list.hidden = false
+        for (const airline of data) {
+            const item = document.createElement('li')
+            item.className = 'list-group-item d-flex'
+            const values = [
+                airline.Airport.Code,
+                airline.Airport.Name,
+                `sum: ${checkSum(airline.Statistics.Flights)}`
+            ]
+            for (const value of values) {
+                const field = document.createElement('span')
+                field.className = 'm-2'
+                field.textContent = value
+                item.append(field)
+            }
+            list.append(item)
         }
     }
 }
